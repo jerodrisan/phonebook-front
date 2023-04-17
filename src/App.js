@@ -97,8 +97,8 @@ function OnSubmitForm(event){
 
 function OnhandleSearch(event){
     event.preventDefault()
-    setEmptySearch(false)   //el input de busqueda ya tiene alguna caracter de busqueda y por tanto es false
-    let str = event.target.value      
+    let str = event.target.value  
+    str ==='' ? setEmptySearch(true) : setEmptySearch(false)
     let filter_persons = persons.filter(person=>(person.name).toLowerCase().includes(str.toLowerCase()))        
     setFilteredPesons(filter_persons)
 }   
