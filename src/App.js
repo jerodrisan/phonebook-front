@@ -1,3 +1,4 @@
+//import axios from 'axios'
 import { useEffect, useState } from "react";
 import Persons from './components-phonebook/Persons'
 import Filter from './components-phonebook/SearchFilter'
@@ -11,7 +12,7 @@ const App = () => {
 
   useEffect(()=>{
     //Pillando datos sin el servicio:
-    // const promise = axios.get('http://localhost:3001/persons')
+    // const promise = axios.get('http://localhost:3001/api/persons')
     // promise.then(result=>{
     //     setPersons(result.data) 
     // })
@@ -58,7 +59,7 @@ const GetALlContacts = () =>{
 function OnSubmitForm(event){
     event.preventDefault()
     let newPers = {name:newName, number:newNumber}
-    let person  = persons.find(person=>person.name ===newName) 
+    let person  = persons.find(person=>person.name ===newName) //realmente es el mismo nombre
     //Si la persona existe, reemplazamos el numero
     if(Boolean(person)){
         let id = person.id
@@ -66,8 +67,8 @@ function OnSubmitForm(event){
         if(replace){
             //reemplazamos el viejo numero con el nuevo:
             ServiceContacts.updateContact(id,newPers)
-            .then(contacto=>{
-               //console.log(contacto)//devuelve el contacto modificado
+            .then((data)=>{
+               //console.log(data) no devuelve ningun dato ya que devuelve un 204 el servidor
                GetALlContacts() //actualizamos la lista
             }).catch(error=>{
                 setNotificationContact({...notificationContact, notificationError:`Information of ${person.name} has already been remove from server` })
@@ -80,11 +81,7 @@ function OnSubmitForm(event){
     }else{            
         //añadimos tambien en el array: 
         ServiceContacts.postContact(newPers)
-        .then(person =>{
-            // setNotificationSuccess(`Added ${newName}`)
-            // setTimeout(()=>{
-            //     setNotificationSuccess(null)    //quitamos la notificacion pasado un tiempo
-            // },2000)
+        .then(person =>{           
             setNotificationContact({...notificationContact, notificationSuccess:`Added ${newName}` })
             setTimeout(()=>{
                 setNotificationContact({...notificationContact, notificationSuccess:null })
@@ -111,8 +108,7 @@ const getPersons = () => emptySearch ? persons : filteredPesons
 
 return(
     <div> 
-        <h2>Phonebook</h2>       
-        {/* <Notification message={notificationSuccess}/>             */}
+        <h2>Phonebook</h2>             
         <Notification message={notificationContact}/>            
         <Filter handleSearch = {OnhandleSearch}/>
         <h2>Add a new</h2>
@@ -121,7 +117,8 @@ return(
             onHandleStateChangeNumber = {HandleStateChangeNumber} newNumber ={newNumber}
             />
         <h2>Numbers</h2>       
-        <Persons personas={getPersons()} updateContacts = {GetALlContacts}/> 
+        <Persons personas={getPersons()} updateContacts = {GetALlContacts}/>       
+       
     </div>
   )
  

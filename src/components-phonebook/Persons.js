@@ -11,9 +11,9 @@ const Persons = (props) =>{
         let confirmar = window.confirm(`Delete ${person.name}?`)
         if (confirmar){
             const promise = ServiceContacts.deleteContact(person.id)
-            promise.then(()=>{ 
-                 //console.log('delete succesfull')              
-                updateContacts()
+            promise.then((data)=>{    
+                //console.log(data)            
+                 updateContacts()
             }).catch(error=>{
                 console.log(error)
             })                         
