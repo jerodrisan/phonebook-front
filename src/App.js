@@ -85,15 +85,30 @@ function OnSubmitForm(event){
             setNotificationContact({...notificationContact, notificationSuccess:`Added ${newName}` })
             setTimeout(()=>{
                 setNotificationContact({...notificationContact, notificationSuccess:null })
-            },2000)
-
+            },3000)            
             setPersons(persons.concat(person)) //añadimos al array lo que devuelve el servidor que es la persona añadida
 
+        })
+        .catch(error=>{
+            // this is the way to access the error message
+            const message = error.response.data.error
+            setNotificationContact({...notificationContact, notificationError:message })
+            setTimeout(()=>{
+                setNotificationContact({...notificationContact, notificationError:null })
+            },3000)
+           
         })
     } 
     setNewName('')
     setNewNumber('')        
 }
+
+// function setNotification (message){
+//     setNotificationContact({...notificationContact, notificationSuccess:message })
+//     setTimeout(()=>{
+//         setNotificationContact({...notificationContact, notificationSuccess:null })
+//     },2000)
+// }
 
 function OnhandleSearch(event){
     event.preventDefault()
