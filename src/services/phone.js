@@ -1,6 +1,6 @@
 import axios from 'axios'
 //Usaremos servidor expres, arrancariamos el servidor en el otro proyecto back de phonebook con npm run dev
-const baseUrl = 'http://localhost:3001/api/persons'
+const baseUrl = 'http://localhost:3003/api/persons'
 
 const getAllContacts = () =>{    
     const promise = axios.get(baseUrl)
