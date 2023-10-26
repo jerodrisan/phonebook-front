@@ -29,4 +29,6 @@ const updateContact = (id,contact) =>{
 
 }
 
-export default {getAllContacts, postContact, deleteContact ,updateContact};
+const ServiceContact =  {getAllContacts, postContact, deleteContact ,updateContact};
+
+export default ServiceContact;

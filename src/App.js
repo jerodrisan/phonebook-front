@@ -9,19 +9,6 @@ import Notification from "./components-phonebook/Notification";
 
 const App = () => {
 
-  useEffect(()=>{
-    //Pillando datos sin el servicio:
-    // const promise = axios.get('http://localhost:3001/persons')
-    // promise.then(result=>{
-    //     setPersons(result.data) 
-    // })
-    //Pillando los datos del servicio: 
-    ServiceContacts.getAllContacts()
-    .then(contactos=>setPersons(contactos))
-    
-
-},[])
-
 const [persons, setPersons] = useState([]) 
 const [newName, setNewName] = useState('')
 const [newNumber, setNewNumber] = useState('')
@@ -32,6 +19,76 @@ const [notificationContact, setNotificationContact] = useState({
     notificationSuccess:null,
     notificationError:null
 })
+
+  useEffect(()=>{
+    //Pillando datos sin el servicio:
+    // const promise = axios.get('http://localhost:3001/persons')
+    // promise.then(result=>{
+    //     setPersons(result.data) 
+    // })
+
+    //Pillando los datos del servicio: 
+    ServiceContacts.getAllContacts()
+    .then(contactos=> {
+        //En caso de que el nombre sea compuesto, sacamos el apellido:        
+        const names = contactos.map(contacto =>{
+            let apellido = contacto.name.split(' ')            
+            return apellido.length > 1 ? apellido[1] : apellido[0]
+        })      
+        //Si queremos poner info adicional de github en el contacto (solo cuando damos actualizar)
+        const url = "https://api.github.com/users/"      
+        //creamos Promise.all con un fetch de urls :      
+        //metodo 1:    
+        // let array_promises_1 = names.map(name=>fetch(url+name).then(response=>response.json()))       
+        // Promise.all(array_promises_1)
+        // .then(results=>{
+        //     const [result1, result2, result3, result4, result5] = results
+        //     console.log('resultados ',result1.name, result2.name, result3.name, result4.name, result5.name)
+        // })
+        //metodo 2: 
+        let array_promises_2 = names.map(name=>fetch(url+name))
+        Promise.all(array_promises_2)
+        .then(response=>{
+            return Promise.all(response.map(res=>res.json()))
+        }).then(results=>{           
+            for (let i=0; i<results.length; i++) {
+                if(!results[i].message){
+                    if(results[i].name ){
+                        contactos[i] =   {...contactos[i], githubname: results[i].name, githuburl: results[i].url , avatarurl: results[i].avatar_url}
+                    } 
+                }
+            }           
+            console.log(contactos) 
+            setPersons(contactos)
+        }) 
+       
+    })
+    // prueba_Promises_2()    
+    // prueba_Promises
+},[])
+
+// const prueba_Promises_2 = () => {
+//     return fetch('https://dummyjson.com/users')    
+//         .then(response => response.json())
+//         .then(res => console.log(res))
+// }
+
+
+// const prueba_Promises =  () => {
+//     const data = [1,2,4]
+//     const func1 = (data) =>{
+//         return data.map((dato)=>  dato*2)   
+//     }      
+//     return new Promise ( (resolve)=>{
+//       setTimeout( () => resolve(func1(data)), 4000 )
+//     }).then(result=>{
+//         console.log('resultado1 ', result.toString())
+//         return new Promise (resolve=> setTimeout(()=>resolve(result[2]), 3000))
+//     }).then(result=>{
+//         console.log('resultado2' , result)
+//     })    
+//   }
+
 
 
 function HandleStateChangeName(event){
@@ -120,7 +177,7 @@ return(
             onHandleStateChangeName={HandleStateChangeName} newName ={newName} 
             onHandleStateChangeNumber = {HandleStateChangeNumber} newNumber ={newNumber}
             />
-        <h2>Numbers</h2>       
+        <h2>Numbers: </h2>       
         <Persons personas={getPersons()} updateContacts = {GetALlContacts}/> 
     </div>
   )
